@@ -15,4 +15,4 @@ libraryDependencies ++= Seq(
 lazy val metrics_cache = (project in file(".")).dependsOn(file_backed_logs, metrics)
 
 lazy val file_backed_logs = RootProject(uri("https://github.com/jfalkner/file_backed_logs.git#v0.0.8"))
-lazy val metrics = RootProject(uri("https://github.com/jfalkner/metrics.git#0.1.1"))
+lazy val metrics = RootProject(uri("https://github.com/jfalkner/metrics.git#0.1.3"))
