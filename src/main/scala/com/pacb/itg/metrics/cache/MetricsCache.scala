@@ -37,14 +37,14 @@ class MetricsCache(val cacheDir: Path) extends Logs {
   def getOrElse(key: Key, chunk: => Chunk): Chunk = cache.get(key) match {
     case Some(hit) => Try(Files.readAllLines(hit).asScala.toList) match {
       case Success(lines) =>
-        println(s"Matched: $key. Returning cached chunk.")
+        //println(s"Matched: $key. Returning cached chunk.")
         CSV(lines)
       case Failure(t) =>
-        println(s"Failed converting cached chunk for: $key. Returning default chunk.")
+        //println(s"Failed converting cached chunk for: $key. Returning default chunk.")
         chunk
     }
     case _ =>
-      println(s"Failed to match: $key. Returning default chunk.")
+      //println(s"Failed to match: $key. Returning default chunk.")
       chunk
   }
 
