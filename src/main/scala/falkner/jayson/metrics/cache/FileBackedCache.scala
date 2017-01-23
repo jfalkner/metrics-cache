@@ -32,9 +32,9 @@ trait FileBackedCache extends Cache {
   protected def json(ns: String, key: String): JsObject =
     new String(Files.readAllBytes(path(ns, key))).parseJson.asJsObject
 
-  protected def list(): Iterator[Path] = cache.resolve("json") match {
-    case p if Files.exists(p) => Files.list(p).iterator.asScala.filter(p => Files.isDirectory(p))
-    case _ => Nil.iterator
+  protected def list(): List[Path] = cache.resolve("json") match {
+    case p if Files.exists(p) => FileUtil.list(p)
+    case _ => Nil
   }
 
   override def put(ns: String, key: String, metrics: Metrics) = JSON(path(ns, key), metrics)
@@ -50,4 +50,20 @@ trait FileBackedCache extends Cache {
         case Success(vals) => Some(vals)
         case Failure(t) => None
       }).flatMap(ms => ms.fields.toSeq).toMap
+}
+
+// TODO: has to be an API in scala that does this
+object FileUtil {
+
+  def list(p: Path, isDir: Boolean = true): List[Path] = {
+    val ds = Files.list(p)
+    try {
+      ds.iterator.asScala.toList.filter(f => Files.isDirectory(f) == isDir)
+    } finally {
+      ds.close
+    }
+  }
+
+  def listFiles(p: Path): List[Path] = list(p, false)
+
 }
