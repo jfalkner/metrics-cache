@@ -25,6 +25,8 @@ trait FileBackedCache extends Cache {
 
   val cache: Path
 
+  lazy val namespaces = list.map(_.getFileName.toString)
+
   protected def path(ns: String, key: String): Path = path(ns, key, "json")
 
   protected def path(ns: String, key: String, ext: String): Path = cache.resolve(s"$ext/$ns/$key.$ext")
@@ -45,7 +47,7 @@ trait FileBackedCache extends Cache {
   }
 
   override def query(key: String): Map[String, JsValue] =
-    list.map(_.getFileName.toString).flatMap(ns =>
+    namespaces.flatMap(ns =>
       Try(json(ns, key)) match {
         case Success(vals) => Some(vals)
         case Failure(t) => None
