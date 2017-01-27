@@ -50,7 +50,9 @@ trait FileBackedCache extends Cache {
   }
 
   override def query(key: String): Map[String, JsValue] =
-   Await.result(Future.sequence(namespaces.map(ns => Future(json(ns, key)))), Duration.Inf).flatMap(ms => ms.fields.toSeq).toMap
+    namespaces.map(
+      ns => Future(Try(json(ns, key)).toOption)
+    ).flatMap(f => Await.result(f, Duration.Inf)).flatMap(ms => ms.fields.toSeq).toMap
 }
 
 // TODO: has to be an API in scala that does this
