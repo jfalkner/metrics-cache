@@ -7,8 +7,11 @@ import falkner.jayson.metrics.io.JSON
 import spray.json.{JsObject, JsValue}
 
 import scala.util.{Failure, Success, Try}
+import scala.concurrent.duration._
 import collection.JavaConverters._
 import spray.json._
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 
 object FileBackedCache {
@@ -47,11 +50,7 @@ trait FileBackedCache extends Cache {
   }
 
   override def query(key: String): Map[String, JsValue] =
-    namespaces.flatMap(ns =>
-      Try(json(ns, key)) match {
-        case Success(vals) => Some(vals)
-        case Failure(t) => None
-      }).flatMap(ms => ms.fields.toSeq).toMap
+   Await.result(Future.sequence(namespaces.map(ns => Future(json(ns, key)))), Duration.Inf).flatMap(ms => ms.fields.toSeq).toMap
 }
 
 // TODO: has to be an API in scala that does this
