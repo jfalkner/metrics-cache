@@ -32,5 +32,5 @@ trait Cache {
   }
 
   def queriesToCsv(bw: BufferedWriter, queries: Traversable[String], view: View): Unit =
-    queries.foreach(q => bw.write(view.metrics.map(m => value(query(q), m)).mkString(",") + "\n"))
+      queries.map(query).foreach(q => bw.write(view.metrics.map(m => value(q, m)).mkString(",") + "\n"))
 }
